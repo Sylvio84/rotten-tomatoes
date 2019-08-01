@@ -1,0 +1,82 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    {{ people }}
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-6">
+            <h1>{{ people }}</h1>
+            <h2>
+                Date de naissance :
+                {{ people.birthday | date("d/m/Y")}}</h2>
+            <p>{{ people.description | markdown | replace({'<h1>': '<h4>', '</h1>': "</h4>"}) | raw }}</p>
+        </div>
+        <div class="col-6"><img src="{{ asset(people.picture) }}" alt="{{ people }}" class="src" style="width: 100%"></div>
+    </div>
+
+    {% if people.actedIn | length %}
+        <hr/>
+        <h2>{{ people }}
+
+            a joué dans
+            {{ people.actedIn | length }}
+            films :
+        </h2>
+
+        <div class=" row">
+            {% for movie in people.actedIn %}
+                <div class="col-3">
+                    <div class="card border-secondary mb-3">
+                        <div class="card-header">
+                            <h5>{{ movie }}</h5>
+                        </div>
+                        <div><img src="{{ movie.poster }}" alt="{{ movie }}" class="src" style="width: 100%"></div>
+                        <div class="card-body">
+                            <h6 class="card-title">Sortie en salle le
+                                <strong>{{ movie.releasedAt | date('d/m/Y') }}</strong>
+                            </h6>
+                            <a href="{{ path('movie_show', { 'slug' : movie.slug}) }}" class="btn btn-primary">Plus d'info</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    {% if people.directed | length %}
+        <hr/>
+        <h2>{{ people }}
+
+            a realisé
+            {{ people.directed | length }}
+
+
+            film(s) :
+        </h2>
+
+        <div class=" row">
+            {% for movie in people.directed %}
+                <div class="col-4">
+                    <div class="card border-secondary mb-3">
+                        <div class="card-header">
+                            <h3>{{ movie }}</h3>
+                        </div>
+                        <div><img src="{{ movie.poster }}" alt="{{ movie }}" class="src" style="width: 100%"></div>
+                        <div class="card-body">
+                            <h6 class="card-title">Sortie en salle le
+                                <strong>{{ movie.releasedAt | date('d/m/Y') }}</strong>
+                            </h6>
+                            <a href="{{ path('movie_show', { 'slug' : movie.slug}) }}" class="btn btn-primary">Plus d'info</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,39 @@
+<div class="movie-card card bg-light border-secondary mb-3">
+    <div class="card-header">
+        <h4>
+            <a href="{{ path('movie_show', { 'slug' : movie.slug}) }}" class="stretched-link">
+                {{ movie }}</a>
+        </h4>
+    </div>
+    <div style="position: relative"><img src="{{ movie.poster }}" alt="{{ movie }}" class="movie-img" style="width: 100%" data-crop-image-ratio="1.2">
+        {% if movie.notation %}
+            <span class="badge badge-success" style="position: absolute; top:10px; right: 10px">
+                {{ movie.notation | number_format(1, ",", " ") }}
+                / 5
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <p class="card-title">
+            Film réalisé par
+            <strong>
+                <a href="{{ path('people',{'slug': movie.director.slug }) }}">{{ movie.director }}</a>
+            </strong><br/>Sortie en salle en
+            <strong>
+                {{ movie.releasedAt | date("F")}}
+                {{ movie.releasedAt | date("Y")}}.</strong>
+
+            <br/>Avec
+            {% for actor in movie.mainActors(2) %}
+                {% if not loop.last %}
+                    <a href="{{ path('people',{'slug': actor.slug }) }}">{{ actor }}</a>
+                    et
+                {% else %}
+                    <a href="{{ path('people',{'slug': actor.slug }) }}">{{ actor }}</a>
+                {% endif %}
+            {% endfor %}
+
+        </p>
+    </div>
+</div>

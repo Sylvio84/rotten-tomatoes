@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des films
+
+{% endblock %}
+
+{% block body %}
+    <h1>Liste des films</h1>
+
+    <p>
+        <a class="btn btn-primary" href="{{ path('movie_new') }}">Ajouter un nouveau film</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Sortie en salle</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.releasedAt ? movie.releasedAt|date('d/m/Y') : '' }}</td>
+                    <td>
+                        <a class="btn btn-primary" href="{{ path('movie_show', {'slug': movie.slug}) }}">
+                            <i class="fas fa-search"></i>
+                            Afficher</a>
+                        <a class="btn btn-secondary" href="{{ path('movie_edit', {'slug': movie.slug}) }}">
+                            <i class="fas fa-edit"></i>
+                            Modifier</a>
+                        {% include('movie/_delete_form.html.twig') %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun film en base de données</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

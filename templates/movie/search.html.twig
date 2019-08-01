@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Recherche de film :
+                "{{ query }}"
+{% endblock %}
+
+{% block body %}
+    <h1>
+        Recherche de film :
+                            "{{ query }}"
+    </h1>
+    <hr>
+    <div class="row">
+        {% for movie in movies %}
+            <div class="col-4">
+                {% include "movie/_card.html.twig" with {'movie': movie} %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

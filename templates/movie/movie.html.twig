@@ -1,0 +1,191 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Film :
+    {{movie.title}}
+{% endblock %}
+
+{% block body %}
+
+
+    <h1>{{movie.title}}</h1>
+    <h3>Realisé par
+        {{movie.director}}, sortie en salle en
+        {{movie.releasedAt|date('Y') }}
+        <span class="badge badge-success float-right">
+            Noté :
+            {{ movie.notation | number_format(1, ",", " ") }}
+            / 5
+        </span>
+    </h3>
+    <h5>
+        {% for category in movie.categories %}
+            <a href="{{path('category', {'slug': category.slug})}}" class="badge badge-dark">
+                {{ category.title }}
+            </a>
+        {% endfor %}
+    </h5>
+</h1>
+<div class="row">
+    <div class="col">
+        <h2>Synopsis :</h2>
+        <p>{{ movie.synopsys | markdown | replace({'<h1>': '<h5>', '</h1>': "</h5>"}) | raw }}</p>
+
+
+        <hr>
+        <h2>Réalisé par
+            {{ movie.director }}</h2>
+
+        <div class="row">
+            <div class="col-3">
+                <img src="{{ asset(movie.director.picture) | imagine_filter('actor_thumb') }}" alt="{{ movie.director }}" style="width: 100%">
+
+
+            </div>
+            <div class="col">
+                <strong>{{ movie.director.directed | length}}
+                    film(s) réalisé(s) :</strong>
+                <ul class="list-unstyled">
+                    {% for movie in movie.director.directed %}
+                        <li>
+                            -
+                            <a href="{{ path('movie_show', {'slug': movie.slug}) }}">
+                                {{ movie.title }}
+                                ({{movie.releasedAt | date('Y')}})
+                            </a>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-4">
+        <p><img src="{{ movie.poster }}" alt="{{ movie }}" style="width: 100%"></p>
+        {% if is_granted('ROLE_ADMIN') %}
+            <p>
+                <a class="btn btn-primary" href="{{ path('movie_edit', {'slug': movie.slug}) }}">
+                    <i class="fas fa-edit"></i>
+                    Modifier</a>
+                {% include('movie/_delete_form.html.twig') %}
+            </p>
+        {% endif %}
+
+    </div>
+</div><hr><h2>Casting :</h2>
+<div class="row">
+    {% for actor in movie.actors %}
+        <div class="col-3">
+            <div class="card bg-light text-center border-primary mb-3">
+                <img src="{{ asset(actor.picture) | imagine_filter('actor_thumb') }}" alt="{{actor}}" style="width: 100%">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{{ path('people', {'slug': actor.slug}) }}" class="stretched-link">{{ actor }}</a>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<div class="alert alert-primary">
+
+
+    {% if alreadyHasRating %}
+        <h2>Vous avez déjà donné votre avis sur ce film</h2>
+    {% else %}
+
+        {% if is_granted('ROLE_USER') %}
+            <h2>Vous aussi, Donnez votre avis sur "{{movie.title}}"</h2>
+            {{ form_start(ratingForm)}}
+
+            {{ form_widget(ratingForm)}}
+
+            <button class="btn btn-success" type="submit">
+                <i class="fas fa-check"></i>
+                Ajouter mon avis
+            </button>
+
+            {{ form_end(ratingForm)}}
+
+
+        {% else %}
+            <h2>Connectez-vous si vous souhaitez donner votre avis sur le film</h2>
+            <a href="{{ path('security_login') }}" class="btn btn-primary">
+                <i class="fas fa-lock-open"></i>
+                Connexion
+            </a>
+        {% endif %}
+    {% endif %}
+</div><hr><h2>{{movie.ratings | length}}
+    critiques de la communauté</h2>
+{% for rating in movie.ratings %}
+    <div class="row">
+        <div class="col-2" style="margin-bottom: 15px">
+            <img src="{{ rating.author.avatar }}" alt="{{ rating.author.name }}" style="width: 100%">
+        </div>
+        <div class="col-10" style="margin-bottom: 15px">
+
+            {% if is_granted('ROLE_MODERATOR') %}
+
+                <div style="float:right">
+                    <a href=" {{ path('rating_delete', { id: rating.id } ) }} ">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            <p>
+                {% for n in 1..rating.notation %}
+                    &#11088;
+                {% endfor %}
+            </p>
+            <blockquote>
+                <em>{{ rating.comment }}</em>
+            </blockquote>
+            <p>par
+                {{ rating.author.name }}, le
+                {{ rating.createdAt | date('d/m/Y') }}
+            </p>
+
+            {% if is_granted('ROLE_USER') %}
+                <hr>
+                <p class="_vote">
+                    <a href="{{ path('rating_like',{ id: rating.id}) }}">&#128077;&nbsp;<span class="likes">{{ rating.likes | length }}</span>
+                    </a>
+                    &nbsp;&nbsp;
+                    <a href="{{ path('rating_dislike',{ id: rating.id}) }}">&#128078;&nbsp;<span class="dislikes">{{ rating.dislikes | length }}</span>
+                    </a>
+                </p>
+            {% else %}
+                {% if rating.dislikes | length and rating.dislikes | length %}
+                    <hr>
+                    <p>
+                        {% if rating.dislikes | length %}
+                            &#128077;&nbsp;<span class="likes">{{ rating.likes | length }}</span>
+                        {% endif %}
+                        &nbsp;&nbsp;
+                        {% if rating.dislikes | length %}
+                            &#128078;&nbsp;<span class="dislikes">{{ rating.dislikes | length }}</span>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+
+<script type="text/javascript">
+    $(function () {
+
+        $("._vote a").on('click', function () {
+            var vote = $(this).closest('._vote');
+            console.log(vote);
+            $.ajax({url: $(this).attr('href'), dataType: 'json'}).done(function (data) {
+                $('span.likes', vote).text(data.likes);
+                $('span.dislikes', vote).text(data.dislikes);
+            });
+            return false;
+        });
+    });
+</script></script></script>{% endblock %}

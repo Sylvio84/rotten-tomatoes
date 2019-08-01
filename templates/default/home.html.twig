@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Accueil
+{% endblock %}
+
+{% block body %}
+    <h1>🥔 Rotten Potatoes</h1>
+
+    <hr/>
+    <h2>Les derniers films sortis :</h2>
+    <div class="row">
+        {% for movie in last_movies %}
+            <div class="col-4">
+                {% include "movie/_card.html.twig" with {'movie': movie} %}
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <hr/>
+    <h2>Les meilleurs films :</h2>
+    <div class="row">
+        {% for movie in best_movies %}
+            <div class="col-4">
+                {% include "movie/_card.html.twig" with {'movie': movie} %}
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <hr/>
+    <h2>Les pires films :</h2>
+    <div class="row">
+        {% for movie in worst_movies %}
+            <div class="col-4">
+                {% include "movie/_card.html.twig" with {'movie': movie} %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr/>
+
+
+    <div class="row">
+        {% for category in categories %}
+            <div class="col-4">
+                <div
+                    class="card border-secondary mb-3">
+                    <!--div class="card-header">{{ category }}</div-->
+                    <div class="card-body">
+                        <h4 class="card-title">{{ category }}</h4>
+                        <a href="{{ path('category', { 'slug' : category.slug}) }}" class="btn btn-primary">Voir les
+                            {{ category.movies | length }}
+                            films "{{ category }}"</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

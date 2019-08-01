@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription
+{% endblock %}
+
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Inscription</h1>
+
+        {{ form_start(registerForm, {'attr': {'novalidate':'novalidate'}}) }}
+        {{ form_widget(registerForm) }}
+        {{ form_end(registerForm) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    {{ category }}
+
+{% endblock %}
+
+{% block body %}
+    <h1>Film : "{{ category }}"</h1>
+    <hr>
+
+    <div class="row">
+        {% for movie in category.movies %}
+            <div class="col-4">
+                {% include "movie/_card.html.twig" with {'movie': movie} %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

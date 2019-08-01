@@ -125,8 +125,6 @@ class DefaultController extends AbstractController
         return $this->json(['likes' => count($rating_likes), 'dislikes' => count($rating_dislikes)]);
     }
 
-
-
     /**
      * @Route("/rating_dislike/{id}", name="rating_dislike")
      * @IsGranted({"ROLE_USER"})

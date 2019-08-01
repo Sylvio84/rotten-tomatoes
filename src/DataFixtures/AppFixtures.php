@@ -44,7 +44,7 @@ class AppFixtures extends Fixture
             $categories[] = $category;
         }
 
-        $peoples = [];
+        $actors = $directors = [];
         for ($p = 0; $p < 20; $p++) {
             $people = new People();
             $people->setLastName($faker->lastName)
@@ -53,7 +53,8 @@ class AppFixtures extends Fixture
                 ->setBirthday($faker->dateTimeBetween('-100 years'), '-10 years')
                 ->setPicture('media/images/male/' . ($p + 1) . '.jpg');
             $manager->persist($people);
-            $peoples[] = $people;
+            $actors[] = $people;
+            if ($p < 5) $directors[] = $people;
         }
         for ($p = 0; $p < 20; $p++) {
             $people = new People();
@@ -63,7 +64,8 @@ class AppFixtures extends Fixture
                 ->setBirthday($faker->dateTimeBetween('-100 years'), '-10 years')
                 ->setPicture('media/images/female/' . ($p + 1) . '.jpg');
             $manager->persist($people);
-            $peoples[] = $people;
+            $actors[] = $people;
+            if ($p < 5) $directors[] = $people;
         }
 
         $users = [];
@@ -115,10 +117,10 @@ class AppFixtures extends Fixture
                     ->setSynopsys($faker->markdown())
                     ->setReleasedAt($faker->dateTimeBetween('-40 years'))
                     ->setPoster("http://www.hidecut.com/wp-content/uploads/2015/05/Pixel-faker-mashup-movie-" . $m . ".jpg")
-                    ->setDirector($faker->randomElement($peoples));
+                    ->setDirector($faker->randomElement($directors));
 
-                $actors = $faker->randomElements($peoples, $faker->numberBetween(4, 8));
-                foreach ($actors as $actor) {
+                $movie_actors = $faker->randomElements($actors, $faker->numberBetween(4, 8));
+                foreach ($movie_actors as $actor) {
                     $movie->addActor($actor);
                 }
                 $movie_categories = $faker->randomElements($categories, $faker->numberBetween(1, 3));
